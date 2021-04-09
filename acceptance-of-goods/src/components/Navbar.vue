@@ -1,0 +1,25 @@
+<template>
+  <nav class="navbar blue lighten-1">
+    <div class="nav-wrapper">
+      <a href="#" class="left">Logo</a>
+      <ul id="nav-mobile" class="right">
+        <li><a href="#">Sass</a></li>
+        <li><a href="#">Components</a></li>
+        <li><a href="#">JavaScript</a></li>
+      </ul>
+    </div>
+  </nav>
+</template>
+
+<script>
+export default {
+name: "Navbar"
+}
+</script>
+
+<style scoped>
+  .navbar{
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+</style>
