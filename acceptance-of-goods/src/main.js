@@ -5,5 +5,4 @@ import store from './store'
 import './registerServiceWorker'
 import 'materialize-css/dist/js/materialize.min'
 
-
 createApp(App).use(store).use(router).mount('#app')

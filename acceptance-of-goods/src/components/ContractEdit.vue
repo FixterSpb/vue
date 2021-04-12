@@ -24,9 +24,11 @@
       </div>
 
       <ContractSpecification />
+      <div class="clear">
       <button class="btn waves-effect waves-light right" type="submit" name="action">Добавить
         <i class="material-icons right">send</i>
       </button>
+      </div>
     </form>
 
 </template>
@@ -43,7 +45,7 @@ name: "Contract",
   .container {
     width: 90%;
   }
-  /*.row{*/
-  /*  display: flex;*/
-  /*}*/
+  .clear {
+    padding: 20px;
+  }
 </style>

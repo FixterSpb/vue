@@ -5,6 +5,7 @@
     <main class="app-content" :class="{full: !sidebarIsOpen}">
       <router-view />
     </main>
+    <footer class="purple darken-1"></footer>
   </div>
 </template>
 

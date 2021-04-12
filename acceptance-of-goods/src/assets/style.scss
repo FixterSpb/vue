@@ -11,14 +11,17 @@
 .app-sidebar{
   padding-top:5px;
   position:absolute;
-  top:64px;
+  top:56px;
   width:200px;
   transition:transform .3s;
   transition:transform .3s,
   -webkit-transform .3s;
   bottom:0!important;
-  z-index: -1;
+  z-index: 0;
   height: auto!important;
+  @media screen and (min-width: 601px){
+    top: 64px;
+  }
 
   &.open{
     -webkit-transform:translateX(0);
@@ -54,4 +57,19 @@
     width: 50px;
   }
 
+}
+
+.td-total{
+  font-weight: bold;
+}
+
+.clear:after{
+  content: '';
+  display: block;
+  clear: both;
+}
+
+footer{
+  height: 40px;
+  position: relative;
 }
