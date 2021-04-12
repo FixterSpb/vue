@@ -1,8 +1,8 @@
 <template>
   <div class="wrapper">
     <navbar />
-    <sidebar />
-    <main>
+    <sidebar :is-open="sidebarIsOpen"/>
+    <main class="app-content" :class="{full: !sidebarIsOpen}">
       <router-view />
     </main>
   </div>
@@ -13,7 +13,11 @@ import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 export default {
   name: "MainLayout",
-  components: {Sidebar, Navbar}
+  data: () => ({
+    sidebarIsOpen: true
+  }),
+  components: {Sidebar, Navbar},
+
 }
 </script>
 

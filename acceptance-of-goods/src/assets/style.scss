@@ -1,0 +1,57 @@
+.wrapper{
+  position: relative;
+}
+
+.app-content{
+  margin-left: 200px;
+  &.full {
+    margin-left: 0;
+  }
+}
+.app-sidebar{
+  padding-top:5px;
+  position:absolute;
+  top:64px;
+  width:200px;
+  transition:transform .3s;
+  transition:transform .3s,
+  -webkit-transform .3s;
+  bottom:0!important;
+  z-index: -1;
+  height: auto!important;
+
+  &.open{
+    -webkit-transform:translateX(0);
+    transform:translateX(0)
+  }
+}
+
+.sidenav__item{
+  text-align: left;
+}
+
+.th {
+  text-align: center;
+  vertical-align: top;
+
+  &-number{
+    width: 35px;
+  }
+
+  &-name {
+    min-width: 130px;
+  }
+
+  &-unit{
+    width: 45px;
+  }
+
+  &-price{
+    width: 95px;
+  }
+
+  &-quantity{
+    width: 50px;
+  }
+
+}

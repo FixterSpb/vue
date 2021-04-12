@@ -1,6 +1,5 @@
 <template>
-  <div class="container">
-    <form class="col s12">
+    <form class="container col s12">
       <div class="row">
         <div class="input-field col s6">
           <input id="contract_number" type="text" class="validate">
@@ -25,9 +24,11 @@
       </div>
 
       <ContractSpecification />
+      <button class="btn waves-effect waves-light right" type="submit" name="action">Добавить
+        <i class="material-icons right">send</i>
+      </button>
     </form>
 
-  </div>
 </template>
 
 <script>
@@ -39,7 +40,10 @@ name: "Contract",
 </script>
 
 <style scoped>
-  .row{
-    display: flex;
+  .container {
+    width: 90%;
   }
+  /*.row{*/
+  /*  display: flex;*/
+  /*}*/
 </style>
