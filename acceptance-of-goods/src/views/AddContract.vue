@@ -4,17 +4,12 @@
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
-import MainLayout from "@/layouts/MainLayout";
-import ContractEdit from "@/components/ContractEdit";
+import ContractEdit from "@/components/contract/ContractEdit";
 
 export default {
   name: 'Home',
   components: {
     ContractEdit,
-    MainLayout,
-    HelloWorld
   }
 }
 </script>

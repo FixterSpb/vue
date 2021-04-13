@@ -40,25 +40,27 @@
             :key=item.id
             :number="idx + 1"
             :good=item
+            :units="dictionaries.units"
+            :taxes="dictionaries.taxes"
         />
         <ContractSpecificationItem
             @pushGood="pushGood"
             @showLastElement="showLastElement"
             :number="goods.length + 1"
-            :good=undefined
+            :good="undefined"
             :key="'specification-item-' + goods.length + 1"
-            defaultNDS=10
-            defaultUnit="кг"
-            setfocus="true"
+            :defaultNDS="defaultTax"
+            :defaultUnit="defaultUnit"
+            :units="dictionaries.units"
+            :taxes="dictionaries.taxes"
+            :setFocus="setFocus"
         />
         <ContractSpecificationItem
             @pushGood="pushGood"
             :number="goods.length + 2"
-            :good=undefined
+            :good="undefined"
             :key="'specification-item-' + goods.length + 2"
-            defaultNDS=10
-            defaultUnit="кг"
-            noShow = true
+            :noShow ="true"
             :class="{hide: isHide}"
         />
         <tr>
@@ -73,7 +75,7 @@
 </template>
 
 <script>
-import ContractSpecificationItem from "@/components/ContractSpecificationItem";
+import ContractSpecificationItem from "@/components/contract/ContractSpecificationItem";
 import {formatFloat} from '@/formats/format';
 export default {
   name: "ContractSpecification",
@@ -106,14 +108,14 @@ export default {
     },
     defaultTax: 0,
     defaultUnit: '',
-    isHide: true
+    isHide: true,
+    setFocus: false,
   }),
   components: {
     ContractSpecificationItem
   },
   methods: {
     pushGood(good){
-      console.log("push good: ", good);
       if (good){
         if(good.id === 0){
           good.id = this.goods.length + 1;
@@ -121,8 +123,9 @@ export default {
         }else{
           this.goods[this.goods.findIndex(el => el.id === good.id)] = good;
         }
+        this.setFocus= true;
         this.isHide = true;
-        console.log("Goods: ", this.goods);
+        console.log(this.goods)
       }
     },
     formatCurrency(value) {
@@ -156,7 +159,7 @@ export default {
     }
   },
 
-  mounted () {
+  beforeMount () {
     // M.updateTextFields();
     this.defaultUnit = this.dictionaries.units[0];
     this.defaultTax = this.dictionaries.taxes[0];

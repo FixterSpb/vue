@@ -4,7 +4,9 @@
     <td>
       <input
           type="text"
-          class="validate name"
+          class='validate name'
+          minlength="3"
+          required
           v-model="name"
           @keyup="show"
           @change="pushGood"
@@ -12,9 +14,10 @@
       ></td>
     <td class="center" :class="{hide: isHide}">
       <select v-model="unit">
-        <option value="шт">шт</option>
-        <option value="кг">кг</option>
-        <option value="л">л</option>
+        <option
+            v-for="(unit, idx) of units"
+            :value="unit"
+        >{{ unit }}</option>
       </select>
     </td>
     <td
@@ -23,9 +26,10 @@
         @change="pushGood"
     >
       <select v-model="NDS">
-        <option value="0">0</option>
-        <option value="10">10</option>
-        <option value="20">20</option>
+        <option
+            v-for="(tax, idx) in taxes"
+            :value="tax"
+        >{{ tax }}</option>
       </select>
     </td>
     <td
@@ -45,10 +49,10 @@
         type="number"
         min="0.01"
         step="0.01"
+        required
         class="validate center"
         v-model="price"
         lang="ru-RU"
-        @keydown="validate"
         @change="pushGood"
     ></td>
     <td
@@ -56,8 +60,9 @@
         :class="{hide: isHide}"
     ><input
         type="number"
-        min="0"
+        min="0.001"
         step="0.001"
+        required
         lang="ru-RU"
         class="validate center"
         v-model="quantity"
@@ -79,14 +84,16 @@ import {formatFloat} from '@/formats/format';
 export default {
   name: "ContractSpecificationItem",
 
-  props:[
-    'number',
-    'good',
-    'defaultNDS',
-    'defaultUnit',
-    'noShow',
-    'setfocus'
-  ],
+  props: {
+    number: Number,
+    good: Array,
+    defaultUnit: String,
+    units: Array,
+    defaultNDS: Number,
+    taxes: Array,
+    noShow: Boolean,
+    setFocus: Boolean
+  },
   data: () => ({
     name: '',
     unit: '',
@@ -94,8 +101,37 @@ export default {
     price: 0.00,
     quantity: '',
     isHide: true,
-    invalid: true,
   }),
+  methods: {
+    show(){
+      console.log(this.noShow);
+      if (this.noShow){
+        return
+      }
+      this.isHide = this.name.trim().length < 3;
+      this.$emit('showLastElement', this.isHide);
+    },
+    formatCurrency(value){
+      return formatFloat(value);
+    },
+    pushGood(){
+      if(this.name.trim().length >= 3 && this.price > 0 && this.unit !== undefined && this.quantity > 0 && this.NDS !== undefined) {
+        this.$emit('pushGood',
+            {
+              id: this.good ? this.good.id : 0,
+              name: this.name,
+              unit: this.unit,
+              NDS: this.NDS,
+              price: this.price,
+              sumNDS: this.sumNDS,
+              priceWithoutNDS: this.priceWithoutNDS,
+              quantity: this.quantity
+            }
+        )
+      }
+    }
+  },
+
   computed: {
     priceWithoutNDS () {
       return Math.round( this.price / (1 + this.NDS / 100) * 100) / 100;
@@ -105,54 +141,9 @@ export default {
     }
   },
 
-  methods: {
-    validate (event) {
-      console.log(event);
-      if (!/[0-9\.,]|arrow|backspace|delete/ig.test(event.key)) {
-        // event.preventDefault();
-      }
-      if (event.key === '.'){
-        // event.key = ','
-      }
-    },
-    show(){
-      console.log('noShow: ', this.noShow, this.noShow === undefined);
-      if (this.noShow !== undefined){
-        return
-      }
-      this.isHide = this.name.trim() === '';
-      console.log("this.isHide: ", this.isHide);
-      this.$emit('showLastElement', this.isHide);
-
-      console.log('noShow: ', this.noShow, this.noShow === undefined);
-    },
-    formatCurrency(value){
-      return formatFloat(value);
-    },
-    pushGood(){
-      if(this.name && this.price && this.unit && this.quantity && this.NDS !== undefined) {
-        this.$emit('pushGood',
-          {
-            id: this.good ? this.good.id : 0,
-            name: this.name,
-            unit: this.unit,
-            NDS: this.NDS,
-            price: this.price,
-            sumNDS: this.sumNDS,
-            priceWithoutNDS: this.priceWithoutNDS,
-            quantity: this.quantity
-          }
-        )
-      }else{
-        console.log(this.name, this.price, this.unit, this.quantity, this.NDS)
-      }
-    }
-  },
-
   mounted() {
     M.updateTextFields();
-    console.log(this.good);
-    if (this.good) {
+    if (this.good !== undefined) {
       this.name = this.good.name;
       this.unit = this.good.unit;
       this.NDS = this.good.NDS;
@@ -164,21 +155,17 @@ export default {
       this.unit = this.defaultUnit;
     };
 
-    if (this.setfocus){
+    if (Boolean(this.setFocus)){
+      console.log('setFocus: ', this.setFocus);
       document.getElementById('id-' + this.number).focus();
     }
-
-    console.log(this.NDS)
   },
 
   beforeUnmount() {
-    console.log(this.name)
     if (M && M.destroy){
       M.destroy();
     }
   }
-
-
 }
 </script>
 

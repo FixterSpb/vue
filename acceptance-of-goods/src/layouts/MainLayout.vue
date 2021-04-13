@@ -1,10 +1,11 @@
 <template>
   <div class="wrapper">
-    <navbar />
-    <sidebar :is-open="sidebarIsOpen"/>
+    <navbar @showSideBar="showSideBar"/>
+    <sidebar :isOpen="sidebarIsOpen"/>
     <main class="app-content" :class="{full: !sidebarIsOpen}">
       <router-view />
     </main>
+    <div class="before-footer"></div>
     <footer class="purple darken-1"></footer>
   </div>
 </template>
@@ -18,6 +19,11 @@ export default {
     sidebarIsOpen: true
   }),
   components: {Sidebar, Navbar},
+  methods: {
+    showSideBar () {
+      this.sidebarIsOpen = !this.sidebarIsOpen;
+    }
+  }
 
 }
 </script>

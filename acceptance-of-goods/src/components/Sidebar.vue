@@ -1,5 +1,5 @@
 <template>
-    <ul class="sidenav app-sidebar open">
+    <ul class="sidenav app-sidebar" :class="{open: isOpen}">
       <li class="sidenav__item"><a href="#">Sass</a></li>
       <li class="sidenav__item active"><a href="#">Components</a></li>
       <li class="sidenav__item"><a href="#">JavaScript</a></li>
@@ -8,7 +8,10 @@
 
 <script>
 export default {
-  name: "Sidebar"
+  name: "Sidebar",
+  props: [
+    'isOpen'
+  ]
 }
 </script>
 
