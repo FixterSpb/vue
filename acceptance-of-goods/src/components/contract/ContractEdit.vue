@@ -9,7 +9,6 @@
               required
               class="validate"
               v-model="contract.number"
-              @change="commit"
               autofocus
           >
           <label for="contract_number">Номер контракта</label>
@@ -17,10 +16,10 @@
         <div class="input-field col s6">
           <input
               type="date"
-              class="datepicker"
+              class="validate datepicker"
               id="contract_date"
+              required
               v-model="contract.date"
-              @change="commit"
           >
           <label for="contract_date">Дата заключения</label>
         </div>
@@ -33,7 +32,7 @@
               class="validate"
               minlength="3"
               required
-              v-model="name"
+              v-model="contract.name"
           >
           <label for="contract_name">Название</label>
         </div>
@@ -44,14 +43,15 @@
               name="contract_description"
               id="contract_description"
               class="materialize-textarea"
-              v-model="description"
+              v-model="contract.description"
           ></textarea>
           <label for="contract_description">Описание</label>
         </div>
       </div>
 
       <ContractSpecification
-          v-if="!(name.trim().length < 3 || !date || number.length < 3)"
+          v-if="!(contract.name.trim().length < 3 || !contract.date || contract.number.length < 3)"
+          :goods="contract.goods"
       />
       <div class="clear">
       <button class="btn waves-effect waves-light right" type="submit" @click.prevent="addContract">Добавить
@@ -64,43 +64,42 @@
 
 <script>
 import ContractSpecification from "@/components/contract/ContractSpecification";
+import {validateContract} from "@/helpers/validators";
+
 export default {
-name: "Contract",
+  name: "Contract",
   components: {ContractSpecification},
   data: () => ({
-    number: '',
-    date: null,
-    name: '',
-    description: '',
     errors: {},
-    contract: {},
+    contract: {
+      number: '',
+      date: "",
+      name: '',
+      description: '',
+      goods : [ ],
+    },
   }),
   methods: {
-    addContract(){
-      // const goods = this.$options.components.ContractSpecification.data().goods;
-      // if(this.name.trim().length < 3 || !this.date || this.number.length < 3){
-      //   return
-      // }
-      //
-      // const contract = {
-      //   number: this.number,
-      //   date: this.date,
-      //   name: this.name,
-      //   description: this.description,
-      //   goods: this.$options.components.ContractSpecification.data().goods
-      // }
-      // console.log(contract)
-      this.$store.commit('newContract', {number: 0, name: 'Новый контракт', date: new Date(2021,1,11)})
-      console.log(this.$store.state.newContract)
-    },
-    commit(){
-      this.$store.commit('newContract', this.contract);
-      console.log(this.$store.state.newContract);
+    addContract() {
+      if (validateContract(this.contract)){
+        const contracts = JSON.parse(localStorage.getItem('contracts')) || [];
+
+        if (!this.contract.id || !contracts[this.contract.id]){
+          this.contract.id = contracts.length;
+          contracts.push(this.contract)
+        }else{
+          contracts[this.contract.id] = this.contract
+        }
+
+        localStorage.setItem('contracts', JSON.stringify(contracts));
+        console.log(contracts);
+        console.log('Валидация прошла успешно!', this.contract);
+      }
+      console.log('Валидация не прошла!', this.contract);
     }
   },
   mounted() {
-    console.log(this.$store.state.newContract);
-    this.contract = this.$store.state.newContract ? this.$store.state.newContract.clone() : {};
+    M.updateTextFields();
   }
 }
 </script>

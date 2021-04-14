@@ -34,34 +34,25 @@
       </thead>
 
       <tbody>
-        <ContractSpecificationItem
-            @pushGood="pushGood"
+        <ContractSpecificationItemEdit
+            @deleteGood="deleteGood"
             v-for="(item, idx) of goods"
-            :key=item.id
+            :key="'specification-item-' + idx"
             :number="idx + 1"
             :good=item
             :units="dictionaries.units"
             :taxes="dictionaries.taxes"
         />
-        <ContractSpecificationItem
+        <ContractSpecificationItemAdd
             @pushGood="pushGood"
             @showLastElement="showLastElement"
             :number="goods.length + 1"
-            :good="undefined"
-            :key="'specification-item-' + goods.length + 1"
+            :key="'specification-item-add-' + (goods.length + 1)"
             :defaultNDS="defaultTax"
             :defaultUnit="defaultUnit"
             :units="dictionaries.units"
             :taxes="dictionaries.taxes"
-            :setFocus="setFocus"
-        />
-        <ContractSpecificationItem
-            @pushGood="pushGood"
-            :number="goods.length + 2"
-            :good="undefined"
-            :key="'specification-item-' + goods.length + 2"
-            :noShow ="true"
-            :class="{hide: isHide}"
+            :setFocus="goods.length"
         />
         <tr>
           <td colspan="8" class="right-align td-total">Итого</td>
@@ -75,33 +66,15 @@
 </template>
 
 <script>
-import ContractSpecificationItem from "@/components/contract/ContractSpecificationItem";
+import ContractSpecificationItemEdit from "@/components/contract/ContractSpecificationItemEdit";
+import ContractSpecificationItemAdd from "@/components/contract/ContractSpecificationItemAdd";
 import {formatFloat} from '@/formats/format';
 export default {
   name: "ContractSpecification",
+  props: [
+    'goods',
+  ],
   data: () => ({
-    goods : [
-      {
-        id: 1,
-        name: 'Горох',
-        unit: 'кг',
-        NDS: 10,
-        priceWithoutNDS: 10.95,
-        sumNDS: 1.10,
-        price: 12.05,
-        quantity: 264
-      },
-      {
-        id: 2,
-        name: 'Картофель',
-        unit: 'кг',
-        NDS: 10,
-        priceWithoutNDS: 15.50,
-        sumNDS: 1.55,
-        price: 17.05,
-        quantity: 264
-      }
-    ],
     dictionaries: {
       units: ['кг', 'шт', 'л'],
       taxes: [0, 10, 20]
@@ -109,31 +82,27 @@ export default {
     defaultTax: 0,
     defaultUnit: '',
     isHide: true,
-    setFocus: false,
+    setFocus: true,
   }),
   components: {
-    ContractSpecificationItem
+    ContractSpecificationItemEdit,
+    ContractSpecificationItemAdd,
   },
   methods: {
     pushGood(good){
       if (good){
-        if(good.id === 0){
-          good.id = this.goods.length + 1;
-          this.goods.push(good)
-        }else{
-          this.goods[this.goods.findIndex(el => el.id === good.id)] = good;
-        }
-        this.setFocus= true;
-        this.isHide = true;
-        console.log(this.goods)
+          this.goods.push(good);
       }
+    },
+    deleteGood(idx){
+      this.goods.splice(idx, 1);
     },
     formatCurrency(value) {
       return formatFloat(value);
     },
     showLastElement(isHide){
       this.isHide = isHide;
-      console.log("Specification.isHide: ", this.isHide);
+      console.log(isHide);
     }
   },
   computed: {
@@ -145,9 +114,10 @@ export default {
       };
 
       this.goods.forEach(good => {
+        const priceWithoutNDS = Math.round(good.price / (1 + good.NDS / 100) *100) / 100;
         result.total += good.price * good.quantity;
-        result.totalNDS += good.sumNDS * good.quantity;
-        result.totalWithoutNDS += good.priceWithoutNDS * good.quantity;
+        result.totalNDS += Math.round( (good.price - priceWithoutNDS) * good.quantity * 100) / 100;
+        result.totalWithoutNDS += priceWithoutNDS * good.quantity;
 
       });
 
