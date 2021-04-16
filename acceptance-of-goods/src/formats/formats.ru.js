@@ -1,11 +1,20 @@
-const optionsFormatFloat = {
+const optionsFormatPrice = {
     useGrouping: true,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
 }
-
-function formatFloat(value) {
-    return new Intl.NumberFormat('ru-RU', optionsFormatFloat).format(value)
+const optionsFormatQuantity = {
+    useGrouping: true,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 3,
 }
 
-export {formatFloat};
+function formatPrice(value) {
+    return new Intl.NumberFormat('ru-RU', optionsFormatPrice).format(value)
+}
+
+function formatQuantity(value) {
+    return new Intl.NumberFormat('ru-RU', optionsFormatQuantity).format(value)
+}
+
+export {formatPrice, formatQuantity};

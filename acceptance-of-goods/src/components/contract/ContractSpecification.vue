@@ -2,16 +2,16 @@
   <div>
     <h5>Спецификация</h5>
     <p>Ставка НДС по-умолчанию:
-      <select v-model="defaultTax">
+      <select v-model="defaultTaxRate">
         <option
-            v-for="(tax, idx) in dictionaries.taxes"
+            v-for="tax in dictionaries.taxes"
             :value="tax"
         >{{ tax }}</option>
       </select>
       Единица измерения товара по-умолчанию
       <select v-model="defaultUnit">
         <option
-            v-for="(unit, idx) of dictionaries.units"
+            v-for="unit of dictionaries.units"
             :value="unit"
         >{{ unit }}</option>
       </select>
@@ -32,10 +32,9 @@
           <th class="th th-price">Стоимость с НДС</th>
         </tr>
       </thead>
-
       <tbody>
-        <ContractSpecificationItemEdit
-            @deleteGood="deleteGood"
+        <contract-specification-item-edit
+            @delete-good="deleteGood"
             v-for="(item, idx) of goods"
             :key="'specification-item-' + idx"
             :number="idx + 1"
@@ -43,16 +42,15 @@
             :units="dictionaries.units"
             :taxes="dictionaries.taxes"
         />
-        <ContractSpecificationItemAdd
-            @pushGood="pushGood"
-            @showLastElement="showLastElement"
+        <contract-specification-item-add
+            @push-good="pushGood"
             :number="goods.length + 1"
             :key="'specification-item-add-' + (goods.length + 1)"
-            :defaultNDS="defaultTax"
+            :defaultTaxRate="defaultTaxRate"
             :defaultUnit="defaultUnit"
             :units="dictionaries.units"
             :taxes="dictionaries.taxes"
-            :setFocus="goods.length"
+            :set-focus="Boolean(goods.length)"
         />
         <tr>
           <td colspan="8" class="right-align td-total">Итого</td>
@@ -68,7 +66,7 @@
 <script>
 import ContractSpecificationItemEdit from "@/components/contract/ContractSpecificationItemEdit";
 import ContractSpecificationItemAdd from "@/components/contract/ContractSpecificationItemAdd";
-import {formatFloat} from '@/formats/format';
+import {formatPrice} from '@/formats/format';
 export default {
   name: "ContractSpecification",
   props: [
@@ -79,7 +77,7 @@ export default {
       units: ['кг', 'шт', 'л'],
       taxes: [0, 10, 20]
     },
-    defaultTax: 0,
+    defaultTaxRate: 0,
     defaultUnit: '',
     isHide: true,
     setFocus: true,
@@ -90,6 +88,7 @@ export default {
   },
   methods: {
     pushGood(good){
+      console.log("contract specification push good", good);
       if (good){
           this.goods.push(good);
       }
@@ -98,7 +97,7 @@ export default {
       this.goods.splice(idx, 1);
     },
     formatCurrency(value) {
-      return formatFloat(value);
+      return formatPrice(value);
     },
     showLastElement(isHide){
       this.isHide = isHide;

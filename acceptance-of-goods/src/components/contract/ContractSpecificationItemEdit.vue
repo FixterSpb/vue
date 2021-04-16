@@ -4,18 +4,17 @@
     <td>
       <input
           :id="'name-' + number"
-          class='validate name'
+          class='name'
           :class="{invalid: errors.name}"
           type="text"
-          minlength="3"
+          :minlength="getRules().name.minLength.value"
           required
           v-model="good.name"
-          @change="validate"
       ></td>
     <td class="center">
       <select v-model="good.unit">
         <option
-            v-for="(unit, idx) of units"
+            v-for="unit of units"
             :value="unit"
         >{{ unit }}</option>
       </select>
@@ -23,70 +22,70 @@
     <td
         class="center"
     >
-      <select v-model="good.NDS">
+      <select v-model="good.taxRate">
         <option
-            v-for="(tax, idx) in taxes"
+            v-for="tax in taxes"
             :value="tax"
         >{{ tax }}</option>
       </select>
     </td>
     <td
         class="center"
-    >{{ formatCurrency(priceWithoutNDS) }}</td>
+    >{{ formatPrice(priceWithoutTax) }}</td>
     <td
         class="center"
-    >{{ formatCurrency(sumNDS) }}
+    >{{ formatPrice(priceTax) }}
     </td>
     <td
         class="center"
     ><input
         type="number"
-        min="0.01"
+        :min="getRules().price.minValue.value"
         step="0.01"
         required
-        class="validate center"
+        class="center"
+        :class="{invalid: errors.price}"
         v-model="good.price"
-        lang="ru-RU"
-        @change="validate"
     ></td>
     <td
         class="center"
     ><input
         type="number"
-        min="1"
+        :min="getRules().quantity.minValue.value"
         step="1"
         required
         lang="ru-RU"
-        class="validate center"
+        class="center"
+        :class="{invalid: errors.quantity}"
         v-model="good.quantity"
-        @change="validate"
     ></td>
     <td
         class="center"
-    >{{ formatCurrency(priceWithoutNDS * good.quantity) }}</td>
-    <td class="center">{{ formatCurrency(sumNDS * good.quantity) }}</td>
-    <td class="center">{{ formatCurrency(good.price * good.quantity) }}</td>
+    >{{ formatPrice(totalWithoutTax) }}</td>
+    <td class="center">{{ formatPrice(totalTax) }}</td>
+    <td class="center">{{ formatPrice(total) }}</td>
     <td class="center">
-      <a href=""
+      <a href="#"
         @click.prevent="deleteGood"
     ><i class="material-icons">cancel</i></a></td>
   </tr>
   <tr v-if="Object.keys(errors).length > 0">
     <td />
     <td colspan="11">
-      <small class="error"  v-for="err of errors">* {{ err }}</small>
+      <small class="error" v-for="err of errors">* {{ err }}</small>
     </td>
   </tr>
 </template>
 
 <script>
 
-import {formatFloat} from '@/formats/format';
-import {validateContractSpecificationItem} from "@/helpers/validators";
+import {formatPrice, formatQuantity} from '@/formats/format';
+import {validateContractSpecification, rulesContractSpecification} from "@/helpers/validators";
+import PriceCalc from "@/helpers/PriceCalc";
 
 
 export default {
-  name: "ContractSpecificationItem",
+  name: "ContractSpecificationItemEdit",
 
   props: {
     number: Number,
@@ -94,41 +93,48 @@ export default {
     units: Array,
     taxes: Array
   },
-  data: () => ({
-    errors: {}
-  }),
+  emits: [
+    'delete-good',
+  ],
   methods: {
-    formatCurrency(value){
-      return formatFloat(value);
-    },
-    validate(){
-      this.errors = validateContractSpecificationItem(this.good);
-      console.log('error: ', this.errors, 'Размер error: ', Object.keys(this.errors).length)
+    formatPrice(value){
+      return formatPrice(value);
     },
     deleteGood(){
-      this.$emit('deleteGood', this.number - 1)
+      this.$emit('delete-good', this.number - 1)
+    },
+    getRules(){
+      return rulesContractSpecification;
     }
   },
 
   computed: {
-    priceWithoutNDS () {
-      return Math.round( this.good.price / (1 + this.good.NDS / 100) * 100) / 100;
+    errors() {
+      const errors = validateContractSpecification(this.good);
+      console.log(errors);
+      return errors;
     },
-    sumNDS () {
-      return Math.round((this.good.price - this.priceWithoutNDS) * 100) / 100;
+
+    priceWithoutTax() {
+      debugger
+      return PriceCalc.getPriceWithoutTax(this.good.price, this.good.taxRate);
+    },
+    priceTax(){
+      return PriceCalc.getPriceTax(this.good.price, this.good.taxRate);
+    },
+    totalWithoutTax() {
+      return this.priceWithoutTax * this.good.quantity
+    },
+    totalTax() {
+      return this.priceTax * this.good.quantity
+    },
+    total() {
+      return this.good.price * this.good.quantity;
     }
   },
-
   mounted() {
-
-  },
-
-  beforeUnmount() {
-    if (M && M.destroy){
-      M.destroy();
-    }
-  },
-
+    window.good = this.good;
+  }
 }
 </script>
 

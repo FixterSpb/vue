@@ -54,7 +54,11 @@
           :goods="contract.goods"
       />
       <div class="clear">
-      <button class="btn waves-effect waves-light right" type="submit" @click.prevent="addContract">Добавить
+      <button
+          class="btn waves-effect waves-light right"
+          type="submit"
+          @click.prevent="addContract"
+      >Добавить
         <i class="material-icons right">send</i>
       </button>
       </div>
@@ -64,7 +68,7 @@
 
 <script>
 import ContractSpecification from "@/components/contract/ContractSpecification";
-import {validateContract} from "@/helpers/validators";
+import {validateContract, RulesContract} from "@/helpers/validators";
 
 export default {
   name: "Contract",
@@ -72,30 +76,36 @@ export default {
   data: () => ({
     errors: {},
     contract: {
-      number: '',
-      date: "",
-      name: '',
-      description: '',
-      goods : [ ],
+      number: "Номер",
+      date: "2021-01-11",
+      name: 'Контракт',
+      description: 'Описание',
+      goods : [{
+        id: 1,
+        name: "Картофель",
+        price: "48.50",
+        taxRate: 10,
+        unit: "кг",
+        quantity: 100
+      }],
     },
   }),
   methods: {
     addContract() {
-      if (validateContract(this.contract)){
-        const contracts = JSON.parse(localStorage.getItem('contracts')) || [];
-
-        if (!this.contract.id || !contracts[this.contract.id]){
-          this.contract.id = contracts.length;
-          contracts.push(this.contract)
-        }else{
-          contracts[this.contract.id] = this.contract
-        }
-
-        localStorage.setItem('contracts', JSON.stringify(contracts));
-        console.log(contracts);
-        console.log('Валидация прошла успешно!', this.contract);
-      }
-      console.log('Валидация не прошла!', this.contract);
+      console.log(RulesContract.number.validate());
+    //   if (validateContract(this.contract)){
+    //     //TODO database!
+    //     const contracts = JSON.parse(localStorage.getItem('contracts')) || [];
+    //
+    //     if (!this.contract.id || !contracts[this.contract.id]){
+    //       this.contract.id = contracts.length;
+    //       contracts.push(this.contract)
+    //     }else{
+    //       contracts[this.contract.id] = this.contract
+    //     }
+    //
+    //     localStorage.setItem('contracts', JSON.stringify(contracts));
+    //   }
     }
   },
   mounted() {

@@ -1,3 +1,4 @@
-import {formatFloat} from './formats.ru'
+const locale = "ru-RU";
+import {formatPrice, formatQuantity} from './formats.ru'
 
-export {formatFloat}
+export {formatPrice, formatQuantity, locale}
